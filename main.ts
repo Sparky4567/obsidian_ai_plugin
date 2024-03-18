@@ -1,7 +1,7 @@
 import {
 	App,
 	Editor,
-	Modal,
+	// Modal,
 	Notice,
 	Plugin,
 	PluginSettingTab,
@@ -206,21 +206,21 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
+// class SampleModal extends Modal {
+// 	constructor(app: App) {
+// 		super(app);
+// 	}
 
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText("AI plugin was loaded!");
-	}
+// 	onOpen() {
+// 		const { contentEl } = this;
+// 		contentEl.setText("AI plugin was loaded!");
+// 	}
 
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
-	}
-}
+// 	onClose() {
+// 		const { contentEl } = this;
+// 		contentEl.empty();
+// 	}
+// }
 
 class SampleSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
