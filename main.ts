@@ -33,7 +33,7 @@ export default class MyPlugin extends Plugin {
 			"Sample Plugin",
 			(evt: MouseEvent) => {
 				// Called when the user clicks the icon.
-				new Notice("This is a notice!");
+				new Notice("Greetings from AI plugin!");
 			}
 		);
 		// Perform additional things with the ribbon

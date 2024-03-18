@@ -7,6 +7,12 @@ This plugin was developed to make a better way to use Local LLM models with Obsi
 -   Download/Clone the plugin into your plugins folder
 -   Ensure that you have Ollama installed
 
+```
+
+https://ollama.com/download
+
+```
+
 Read documentation accordingly.
 
 -   Ensure that Ollama model is running in the background
