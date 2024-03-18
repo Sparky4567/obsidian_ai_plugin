@@ -238,8 +238,8 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Flask endpoint url")
-			.setDesc("Flask middleware")
+			.setName("Ollama endpoint")
+			.setDesc("Ollama API URL")
 			.addText((text) =>
 				text
 					.setPlaceholder("Enter your endpoint url")
