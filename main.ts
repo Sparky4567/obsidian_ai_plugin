@@ -176,7 +176,7 @@ export default class MyPlugin extends Plugin {
 			},
 		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new SampleSettingTab(this.app, this, settings));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -224,10 +224,12 @@ class SampleModal extends Modal {
 
 class SampleSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
+	settings: MyPluginSettings;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: MyPlugin, settings: MyPluginSettings) {
 		super(app, plugin);
 		this.plugin = plugin;
+		this.settings = settings;
 	}
 
 	display(): void {
@@ -248,23 +250,44 @@ class SampleSettingTab extends PluginSettingTab {
 					})
 			);
 
-		new Setting(containerEl)
-			.setName("LLM model")
-			.setDesc(
-				"Choose a model, remember that you should download ollama and needed models first !"
-			)
-			.addDropdown((dropdown) => {
-				dropdown
-					.addOption("tinyllama", "tinyllama")
-					.addOption("phi", "phi")
-					.addOption("orca-mini", "orca-mini")
-					.addOption("tinydolphin", "tinydolphin")
-					.addOption("samantha-mistral", "samantha-mistral")
-					.setValue("tinyllama")
-					.onChange(async (value) => {
-						this.plugin.settings.model = value;
-						await this.plugin.saveSettings();
-					});
-			});
+		if (this.settings.model !== null && this.settings.model !== "") {
+			new Setting(containerEl)
+				.setName("LLM model")
+				.setDesc(
+					"Choose a model, remember that you should download ollama and needed models first !"
+				)
+				.addDropdown((dropdown) => {
+					dropdown
+						.addOption("tinyllama", "tinyllama")
+						.addOption("phi", "phi")
+						.addOption("orca-mini", "orca-mini")
+						.addOption("tinydolphin", "tinydolphin")
+						.addOption("samantha-mistral", "samantha-mistral")
+						.setValue(this.settings.model)
+						.onChange(async (value) => {
+							this.plugin.settings.model = value;
+							await this.plugin.saveSettings();
+						});
+				});
+		} else {
+			new Setting(containerEl)
+				.setName("LLM model")
+				.setDesc(
+					"Choose a model, remember that you should download ollama and needed models first !"
+				)
+				.addDropdown((dropdown) => {
+					dropdown
+						.addOption("tinyllama", "tinyllama")
+						.addOption("phi", "phi")
+						.addOption("orca-mini", "orca-mini")
+						.addOption("tinydolphin", "tinydolphin")
+						.addOption("samantha-mistral", "samantha-mistral")
+						.setValue("tinyllama")
+						.onChange(async (value) => {
+							this.plugin.settings.model = value;
+							await this.plugin.saveSettings();
+						});
+				});
+		}
 	}
 }
