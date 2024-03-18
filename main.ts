@@ -66,6 +66,7 @@ export default class MyPlugin extends Plugin {
 		async function getResponsefromLLM(passedQuery: string) {
 			const llmSettings = settings;
 			const llmModel = llmSettings.model;
+			console.log(llmModel);
 			const endpoint = `${llmSettings.ollama_endpoint}`;
 			const inputString = `${passedQuery}`;
 			const bodyOb = {
@@ -128,7 +129,6 @@ export default class MyPlugin extends Plugin {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
 				getResponsefromLLM(userRequest).then((data) => {
-					console.log(data);
 					editor.replaceSelection(String(data));
 				});
 			},
@@ -143,7 +143,6 @@ export default class MyPlugin extends Plugin {
 				getResponsefromLLM(
 					`Continue my story and make it better: ${userRequest}`
 				).then((data) => {
-					console.log(data);
 					editor.replaceSelection(String(data));
 				});
 			},
@@ -158,7 +157,6 @@ export default class MyPlugin extends Plugin {
 				getResponsefromLLM(
 					`Make a story from my text: ${userRequest}`
 				).then((data) => {
-					console.log(data);
 					editor.replaceSelection(String(data));
 				});
 			},
@@ -173,7 +171,6 @@ export default class MyPlugin extends Plugin {
 				getResponsefromLLM(
 					`Make a summary from provided text: ${userRequest}`
 				).then((data) => {
-					console.log(data);
 					editor.replaceSelection(String(data));
 				});
 			},
@@ -256,14 +253,18 @@ class SampleSettingTab extends PluginSettingTab {
 			.setDesc(
 				"Choose a model, remember that you should download ollama and needed models first !"
 			)
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your endpoint url")
-					.setValue(this.plugin.settings.model)
+			.addDropdown((dropdown) => {
+				dropdown
+					.addOption("tinyllama", "tinyllama")
+					.addOption("phi", "phi")
+					.addOption("orca-mini", "orca-mini")
+					.addOption("tinydolphin", "tinydolphin")
+					.addOption("samantha-mistral", "samantha-mistral")
+					.setValue("tinyllama")
 					.onChange(async (value) => {
 						this.plugin.settings.model = value;
 						await this.plugin.saveSettings();
-					})
-			);
+					});
+			});
 	}
 }
