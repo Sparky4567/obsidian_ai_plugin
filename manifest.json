@@ -1,5 +1,5 @@
 {
-	"id": "ai_plugin",
+	"id": "ai_llm",
 	"name": "AI LLM Plugin",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
