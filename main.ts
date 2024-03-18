@@ -164,6 +164,20 @@ export default class MyPlugin extends Plugin {
 			},
 		});
 
+		this.addCommand({
+			id: "summarize-my-text",
+			name: "Summarize my text (ASK LLM)",
+			editorCallback: (editor: Editor) => {
+				const userRequest = editor.getSelection();
+				// eslint-disable-next-line prefer-const
+				getResponsefromLLM(
+					`Make a summary from provided text: ${userRequest}`
+				).then((data) => {
+					console.log(data);
+					editor.replaceSelection(String(data));
+				});
+			},
+		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
