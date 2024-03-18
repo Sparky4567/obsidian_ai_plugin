@@ -1,6 +1,6 @@
 {
 	"id": "ai_llm",
-	"name": "AI LLM Plugin",
+	"name": "AI LLM",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Lets to integrrate local llm (ollama) functionality into your app.",
