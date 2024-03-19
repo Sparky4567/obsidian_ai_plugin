@@ -264,6 +264,8 @@ class llmSettingsTab extends PluginSettingTab {
 						.addOption("orca-mini", "orca-mini")
 						.addOption("tinydolphin", "tinydolphin")
 						.addOption("samantha-mistral", "samantha-mistral")
+						.addOption("llama2", "llama2")
+						.addOption("medllama2", "medllama2")
 						.setValue(this.settings.model)
 						.onChange(async (value) => {
 							this.plugin.settings.model = value;
