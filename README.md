@@ -47,6 +47,10 @@ Your text will be changed with the text from LLM (Default is tinyllama)
 
 If you have any questions related to the plugin or want to extend the functionality, write an email to admin@artefaktas.eu and I will try to respond as soon, as I can.
 
+### Recommendations
+
+-   A laptop with at least 8GB of RAM and a decent processor (for local usage)
+
 ### Want to support the project ?
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K06VU8Z)
