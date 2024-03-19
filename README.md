@@ -5,6 +5,20 @@ This plugin was developed to make a better way to use Local LLM models with Obsi
 ## In order to use the plugin
 
 -   Download/Clone the plugin into your plugins folder
+
+```
+
+cd ./obsidian/plugins
+git clone https://github.com/Sparky4567/obsidian_ai_plugin.git
+cd obsidian_ai_plugin
+npm install
+open Obsidian app
+enable community plugin support
+enable LLM plugin
+choose a module within the settings tab
+
+```
+
 -   Ensure that you have Ollama installed
 
 ```
@@ -25,7 +39,7 @@ ollama run tinyllama
 
 ```
 
--   If you downloaded this plugin from GitHub repo, copy it to your .obsidian/plugins, don't forget to run within the plugins directory
+-   If you downloaded this plugin from GitHub repo, copy it to your .obsidian/plugins, don't forget to run npm install within the plugins directory
 
 ```
 npm install
