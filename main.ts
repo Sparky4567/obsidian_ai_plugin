@@ -11,18 +11,18 @@ import {
 } from "obsidian";
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface llmSettings {
 	ollama_endpoint: string;
 	model: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: llmSettings = {
 	ollama_endpoint: "http://localhost:11434/api/generate",
 	model: "tinyllama",
 };
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class llmPlugin extends Plugin {
+	settings: llmSettings;
 
 	async onload() {
 		const settings = await this.loadSettings();
@@ -66,7 +66,6 @@ export default class MyPlugin extends Plugin {
 		async function getResponsefromLLM(passedQuery: string) {
 			const llmSettings = settings;
 			const llmModel = llmSettings.model;
-			console.log(llmModel);
 			const endpoint = `${llmSettings.ollama_endpoint}`;
 			const inputString = `${passedQuery}`;
 			const bodyOb = {
@@ -113,11 +112,12 @@ export default class MyPlugin extends Plugin {
 						// Remove any empty strings from the response
 						// eslint-disable-next-line prefer-const
 						let response = bot_response.trim();
-
+						new Notice("Success !");
 						return String(response);
 					}
 				});
 			} catch (error) {
+				new Notice(`Error: ${error}!`);
 				return String(error);
 			}
 		}
@@ -128,6 +128,7 @@ export default class MyPlugin extends Plugin {
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
+				new Notice("Trying to send a request to LLM !\n\nPatience !");
 				getResponsefromLLM(userRequest).then((data) => {
 					editor.replaceSelection(String(data));
 				});
@@ -176,18 +177,18 @@ export default class MyPlugin extends Plugin {
 			},
 		});
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this, settings));
+		this.addSettingTab(new llmSettingsTab(this.app, this, settings));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, "click", (evt: MouseEvent) => {
-			console.log("click", evt);
-		});
+		// this.registerDomEvent(document, "click", (evt: MouseEvent) => {
+		// 	console.log("click", evt);
+		// });
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(
-			window.setInterval(() => console.log("setInterval"), 5 * 60 * 1000)
-		);
+		// this.registerInterval(
+		// 	window.setInterval(() => console.log("setInterval"), 5 * 60 * 1000)
+		// );
 	}
 
 	onunload() {}
@@ -222,11 +223,11 @@ export default class MyPlugin extends Plugin {
 // 	}
 // }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-	settings: MyPluginSettings;
+class llmSettingsTab extends PluginSettingTab {
+	plugin: llmPlugin;
+	settings: llmSettings;
 
-	constructor(app: App, plugin: MyPlugin, settings: MyPluginSettings) {
+	constructor(app: App, plugin: llmPlugin, settings: llmSettings) {
 		super(app, plugin);
 		this.plugin = plugin;
 		this.settings = settings;
