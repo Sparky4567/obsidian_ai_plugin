@@ -25,6 +25,15 @@ ollama run tinyllama
 
 ```
 
+-   If you downloaded this plugin from GitHub repo, copy it to your .obsidian/plugins, don't forget to run within the plugins directory
+
+```
+npm install
+
+```
+
+to install all needed dependencies.
+
 -   Ensure that the plugin is activated
 -   Choose the right endpoint and model in plugins settings
 -   Write something into editor field (Simple text)
