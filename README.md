@@ -54,3 +54,5 @@ If you have any questions related to the plugin or want to extend the functional
 ### Want to support the project ?
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K06VU8Z)
+
+[![wakatime](https://wakatime.com/badge/user/1fbc8005-b2d0-4f4f-93e8-f12d7d25d676/project/018e50a2-95fc-40fa-aed2-18be07c19419.svg)](https://wakatime.com/badge/user/1fbc8005-b2d0-4f4f-93e8-f12d7d25d676/project/018e50a2-95fc-40fa-aed2-18be07c19419)
