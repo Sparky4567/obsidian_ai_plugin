@@ -9,7 +9,6 @@ import {
 	Setting,
 	requestUrl,
 } from "obsidian";
-// Remember to rename these classes and interfaces!
 
 interface llmSettings {
 	ollama_endpoint: string;
@@ -26,32 +25,6 @@ export default class llmPlugin extends Plugin {
 
 	async onload() {
 		const settings = await this.loadSettings();
-
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon(
-			"dice",
-			"Sample Plugin",
-			(evt: MouseEvent) => {
-				// Called when the user clicks the icon.
-				new Notice("Greetings from AI plugin!");
-			}
-		);
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass("my-plugin-ribbon-class");
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText("Status Bar Text");
-
-		// This adds a simple command that can be triggered anywhere
-		// this.addCommand({
-		// 	id: "open-sample-modal-simple",
-		// 	name: "Open sample modal (simple)",
-		// 	callback: () => {
-		// 		new SampleModal(this.app).open();
-		// 	},
-		// });
-
 		this.addCommand({
 			id: "insert-todays-date",
 			name: "Insert today's date",
@@ -86,7 +59,6 @@ export default class llmPlugin extends Plugin {
 						// eslint-disable-next-line prefer-const
 						let json_objects: string[] = [];
 
-						// Split the data_list into individual JSON objects
 						data_list.split("}").forEach((obj) => {
 							if (obj.trim()) {
 								json_objects.push(obj + "}");
@@ -95,21 +67,18 @@ export default class llmPlugin extends Plugin {
 
 						// eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
 						let responses: any[] = [];
-						// Extract the 'response' field from each JSON object
 						json_objects.forEach((obj) => {
 							// eslint-disable-next-line prefer-const
 							let response = JSON.parse(obj)["response"];
 							responses.push(response);
 						});
 
-						// Join the responses into a single string
 						// eslint-disable-next-line prefer-const
 						let response_line = responses.join("");
 
 						// eslint-disable-next-line prefer-const
 						let bot_response = `\n\n${response_line}\n\n`;
 
-						// Remove any empty strings from the response
 						// eslint-disable-next-line prefer-const
 						let response = bot_response.trim();
 						new Notice("Success !");
@@ -176,19 +145,7 @@ export default class llmPlugin extends Plugin {
 				});
 			},
 		});
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new llmSettingsTab(this.app, this, settings));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		// this.registerDomEvent(document, "click", (evt: MouseEvent) => {
-		// 	console.log("click", evt);
-		// });
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		// this.registerInterval(
-		// 	window.setInterval(() => console.log("setInterval"), 5 * 60 * 1000)
-		// );
 	}
 
 	onunload() {}
@@ -206,22 +163,6 @@ export default class llmPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
-
-// class SampleModal extends Modal {
-// 	constructor(app: App) {
-// 		super(app);
-// 	}
-
-// 	onOpen() {
-// 		const { contentEl } = this;
-// 		contentEl.setText("AI plugin was loaded!");
-// 	}
-
-// 	onClose() {
-// 		const { contentEl } = this;
-// 		contentEl.empty();
-// 	}
-// }
 
 class llmSettingsTab extends PluginSettingTab {
 	plugin: llmPlugin;
