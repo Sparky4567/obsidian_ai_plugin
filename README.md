@@ -12,6 +12,7 @@ cd ./obsidian/plugins
 git clone https://github.com/Sparky4567/obsidian_ai_plugin.git
 cd obsidian_ai_plugin
 npm install
+npm run build
 open Obsidian app
 enable community plugin support
 enable LLM plugin
