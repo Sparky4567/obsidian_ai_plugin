@@ -5,7 +5,6 @@ import {
 	Notice,
 	Plugin,
 	PluginSettingTab,
-	moment,
 	Setting,
 	requestUrl,
 } from "obsidian";
@@ -25,16 +24,7 @@ export default class llmPlugin extends Plugin {
 
 	async onload() {
 		const settings = await this.loadSettings();
-		this.addCommand({
-			id: "insert-todays-date",
-			name: "Insert today's date",
-			editorCallback: (editor: Editor) => {
-				editor.replaceRange(
-					moment().format("YYYY-MM-DD"),
-					editor.getCursor()
-				);
-			},
-		});
+		
 
 		async function getResponsefromLLM(passedQuery: string) {
 			const llmSettings = settings;
@@ -93,7 +83,7 @@ export default class llmPlugin extends Plugin {
 
 		this.addCommand({
 			id: "send-request-to-llm",
-			name: "ASK LLM",
+			name: "Ask Llm",
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
@@ -106,7 +96,7 @@ export default class llmPlugin extends Plugin {
 
 		this.addCommand({
 			id: "continue-my-story",
-			name: "Continue my story and make it better (ASK LLM)",
+			name: "Continue my story and make it better",
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
@@ -120,7 +110,7 @@ export default class llmPlugin extends Plugin {
 
 		this.addCommand({
 			id: "make-a-story",
-			name: "Make a story from my text (ASK LLM)",
+			name: "Make a story from my text",
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
@@ -134,7 +124,7 @@ export default class llmPlugin extends Plugin {
 
 		this.addCommand({
 			id: "summarize-my-text",
-			name: "Summarize my text (ASK LLM)",
+			name: "Summarize my text ",
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
