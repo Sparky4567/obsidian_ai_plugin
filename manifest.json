@@ -3,7 +3,7 @@
 	"name": "AI LLM",
 	"version": "1.0.2",
 	"minAppVersion": "1.5.11",
-	"description": "Lets to integrate local llm (ollama) functionality into your app.",
+	"description": "Integrate local llm (ollama) functionality into your app.",
 	"author": "Sparky4567",
 	"authorUrl": "https://artefaktas.eu",
 	"fundingUrl": "https://ko-fi.com/artefaktas",
