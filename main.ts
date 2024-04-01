@@ -24,7 +24,6 @@ export default class llmPlugin extends Plugin {
 
 	async onload() {
 		const settings = await this.loadSettings();
-		
 
 		async function getResponsefromLLM(passedQuery: string) {
 			const llmSettings = settings;
@@ -34,6 +33,7 @@ export default class llmPlugin extends Plugin {
 			const bodyOb = {
 				prompt: inputString,
 				model: llmModel,
+				stream: true,
 			};
 
 			try {
@@ -46,21 +46,15 @@ export default class llmPlugin extends Plugin {
 					if (res) {
 						// eslint-disable-next-line prefer-const
 						let data_list = res;
-						// eslint-disable-next-line prefer-const
-						let json_objects: string[] = [];
-
-						data_list.split("}").forEach((obj) => {
-							if (obj.trim()) {
-								json_objects.push(obj + "}");
-							}
-						});
-
 						// eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
 						let responses: any[] = [];
-						json_objects.forEach((obj) => {
-							// eslint-disable-next-line prefer-const
-							let response = JSON.parse(obj)["response"];
-							responses.push(response);
+						data_list.split("}").forEach((obj) => {
+							if (obj.trim()) {
+								obj = obj + "}";
+								// eslint-disable-next-line prefer-const
+								let response = JSON.parse(obj)["response"];
+								responses.push(response);
+							}
 						});
 
 						// eslint-disable-next-line prefer-const
