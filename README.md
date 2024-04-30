@@ -62,6 +62,11 @@ Your text will be changed with the text from LLM (Default is tinyllama)
 
 If you have any questions related to the plugin or want to extend the functionality, write an email to admin@artefaktas.eu and I will try to respond as soon, as I can.
 
+### Troubleshooting
+
+- When you run `ollama`, you are running a particular LLM model in another thread.  A common issue is 404 errors inside of Obsidian and no responses. Check your configuration, and make sure that the ollama model you are running matches what Obsidian is calling. The default model is `tinyllama`.
+- If you get other errors, the most likely cause is that `ollama` is not running in the background.  `ollama run <modelname>` opens a port on your local machine, and this plugin uses [that resulting REST API](https://github.com/ollama/ollama?tab=readme-ov-file#rest-api) to function.
+
 ### Recommendations
 
 -   A laptop with at least 8GB of RAM and a decent processor (for local usage)
