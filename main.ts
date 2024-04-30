@@ -185,6 +185,8 @@ class llmSettingsTab extends PluginSettingTab {
 				.addDropdown((dropdown) => {
 					dropdown
 						.addOption("tinyllama", "tinyllama")
+						.addOption("llama3", "llama3")
+						.addOption("llama3:70b", "llama3:70b")
 						.addOption("phi", "phi")
 						.addOption("orca-mini", "orca-mini")
 						.addOption("tinydolphin", "tinydolphin")
