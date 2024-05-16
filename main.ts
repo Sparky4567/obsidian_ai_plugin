@@ -7,9 +7,10 @@ import {
 	PluginSettingTab,
 	WorkspaceLeaf,
 	Setting,
-	requestUrl,
 	ItemView,
 } from "obsidian";
+import { Ollama } from "ollama-node";
+const ollama = new Ollama();
 
 interface llmSettings {
 	ollama_endpoint: string;
@@ -20,6 +21,18 @@ const DEFAULT_SETTINGS: llmSettings = {
 	ollama_endpoint: "http://localhost:11434/api/generate",
 	model: "tinyllama",
 };
+
+async function streamingResponse(editor: any, set: any, userRequest: any) {
+	const llmSettings = set;
+	const llmModel = llmSettings.model;
+	await ollama.setModel(llmModel);
+
+	// callback to print each word
+	const print = (word: string) => {
+		editor.replaceSelection(word);
+	};
+	await ollama.streamingGenerate(userRequest, print);
+}
 
 export const VIEW_TYPE_EXAMPLE = "example-view";
 
@@ -41,56 +54,6 @@ export class ExampleView extends ItemView {
 
 	async onOpen() {
 		const set = this.settings;
-		async function getChatResponsefromLLM(passedQuery: string) {
-			const llmSettings = set;
-			const llmModel = llmSettings.model;
-			const endpoint = `${llmSettings.ollama_endpoint}`;
-			const inputString = `${passedQuery}`;
-			const bodyOb = {
-				prompt: inputString,
-				model: llmModel,
-				stream: true,
-			};
-
-			try {
-				return await requestUrl({
-					url: endpoint,
-					method: "POST",
-					body: JSON.stringify(bodyOb),
-				}).then((data) => {
-					const res = data.text;
-					if (res) {
-						// eslint-disable-next-line prefer-const
-						let data_list = res;
-						// eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
-						let responses: any[] = [];
-						data_list.split("}").forEach((obj) => {
-							if (obj.trim()) {
-								obj = obj + "}";
-								// eslint-disable-next-line prefer-const
-								let response = JSON.parse(obj)["response"];
-								responses.push(response);
-							}
-						});
-
-						// eslint-disable-next-line prefer-const
-						let response_line = responses.join("");
-
-						// eslint-disable-next-line prefer-const
-						let bot_response = `\n\n${response_line}\n\n`;
-
-						// eslint-disable-next-line prefer-const
-						let response = bot_response;
-						new Notice("Success !");
-						return String(response);
-					}
-				});
-			} catch (error) {
-				new Notice(`Error: ${error}!`);
-				return String(error);
-			}
-		}
-
 		const container = this.containerEl.children[1];
 		container.empty();
 		container.createEl("div", {
@@ -134,22 +97,32 @@ export class ExampleView extends ItemView {
 			}
 		});
 
-		buttonSelector?.addEventListener("click", () => {
+		buttonSelector?.addEventListener("click", async () => {
 			// eslint-disable-next-line prefer-const
 			let passingValue = inputvalue;
-			const waitingForAnswer = `\nWaiting for answer to prompt: ${passingValue}\n`;
+			const waitingForAnswer = `\n\nWaiting for answer to prompt: ${passingValue}\n\n`;
 
 			if (chatboxSelector) {
 				chatboxSelector.textContent += waitingForAnswer;
 			}
 			new Notice("Trying to send a request to LLM !\n\nPatience !");
-			getChatResponsefromLLM(passingValue).then((data) => {
-				// eslint-disable-next-line prefer-const
-				let answerBox = String(data);
+
+			const llmSettings = set;
+			const llmModel = llmSettings.model;
+			await ollama.setModel(llmModel);
+			if (chatboxSelector) {
+				chatboxSelector.textContent += `\n\n`;
+			}
+			// callback to print each word
+			const print = (word: string) => {
 				if (chatboxSelector) {
-					chatboxSelector.textContent += `\n${answerBox}\n`;
+					chatboxSelector.textContent += `${word}`;
 				}
-			});
+			};
+			await ollama.streamingGenerate(passingValue, print);
+			if (chatboxSelector) {
+				chatboxSelector.textContent += `\n\n`;
+			}
 		});
 		if (cleanSelector) {
 			cleanSelector.addEventListener("click", () => {
@@ -182,66 +155,15 @@ export default class llmPlugin extends Plugin {
 			}
 		);
 
-		async function getResponsefromLLM(passedQuery: string) {
-			const llmSettings = settings;
-			const llmModel = llmSettings.model;
-			const endpoint = `${llmSettings.ollama_endpoint}`;
-			const inputString = `${passedQuery}`;
-			const bodyOb = {
-				prompt: inputString,
-				model: llmModel,
-				stream: true,
-			};
-
-			try {
-				return await requestUrl({
-					url: endpoint,
-					method: "POST",
-					body: JSON.stringify(bodyOb),
-				}).then((data) => {
-					const res = data.text;
-					if (res) {
-						// eslint-disable-next-line prefer-const
-						let data_list = res;
-						// eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
-						let responses: any[] = [];
-						data_list.split("}").forEach((obj) => {
-							if (obj.trim()) {
-								obj = obj + "}";
-								// eslint-disable-next-line prefer-const
-								let response = JSON.parse(obj)["response"];
-								responses.push(response);
-							}
-						});
-
-						// eslint-disable-next-line prefer-const
-						let response_line = responses.join("");
-
-						// eslint-disable-next-line prefer-const
-						let bot_response = `\n\n${response_line}\n\n`;
-
-						// eslint-disable-next-line prefer-const
-						let response = bot_response;
-						new Notice("Success !");
-						return String(response);
-					}
-				});
-			} catch (error) {
-				new Notice(`Error: ${error}!`);
-				return String(error);
-			}
-		}
-
 		this.addCommand({
 			id: "send-request-to-llm",
 			name: "Ask Llm",
 			editorCallback: (editor: Editor) => {
-				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
+				const selection = editor.getSelection();
+				const userRequest = selection;
 				new Notice("Trying to send a request to LLM !\n\nPatience !");
-				getResponsefromLLM(userRequest).then((data) => {
-					editor.replaceSelection(String(data));
-				});
+				streamingResponse(editor, settings, userRequest);
 			},
 		});
 
@@ -250,12 +172,8 @@ export default class llmPlugin extends Plugin {
 			name: "Continue my story and make it better",
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
-				// eslint-disable-next-line prefer-const
-				getResponsefromLLM(
-					`Continue my story and make it better: ${userRequest}`
-				).then((data) => {
-					editor.replaceSelection(String(data));
-				});
+				const continueRequest = `Continue my story and make it better: ${userRequest}`;
+				streamingResponse(editor, settings, continueRequest);
 			},
 		});
 
@@ -265,11 +183,8 @@ export default class llmPlugin extends Plugin {
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
-				getResponsefromLLM(
-					`Make a story from my text: ${userRequest}`
-				).then((data) => {
-					editor.replaceSelection(String(data));
-				});
+				const storyRequest = `Make a story from my text: ${userRequest}`;
+				streamingResponse(editor, settings, storyRequest);
 			},
 		});
 
@@ -278,12 +193,8 @@ export default class llmPlugin extends Plugin {
 			name: "Summarize my text ",
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
-				// eslint-disable-next-line prefer-const
-				getResponsefromLLM(
-					`Make a summary from provided text: ${userRequest}`
-				).then((data) => {
-					editor.replaceSelection(String(data));
-				});
+				const summaryRequest = `Make a summary from provided text: ${userRequest}`;
+				streamingResponse(editor, settings, summaryRequest);
 			},
 		});
 		this.addSettingTab(new llmSettingsTab(this.app, this, settings));
