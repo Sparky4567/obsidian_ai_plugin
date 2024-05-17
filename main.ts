@@ -63,31 +63,43 @@ export class ExampleView extends ItemView {
 			},
 		});
 		container.createEl("input", {
+			placeholder:
+				"You are a helpful AI assistant providing only short answers",
+			value: "You are a helpful AI assistant providing only short answers",
+			attr: {
+				id: "stop_stream_button",
+				style: "width:95%;padding:2px;border-radius:8px;height:2rem;font-size:1.2rem;display:block;margin-top:1rem;margin-bottom:0;border:1px solid white;",
+			},
+		});
+		container.createEl("input", {
 			attr: {
 				id: "input_field",
 				placeholder: "Write your text here",
-				style: "width:95%;padding:4px;border-radius:8px;height:4rem;font-size:1.2rem;display:block;margin-top:2rem;margin-bottom:0;border:1px solid white;",
+				style: "width:95%;padding:2px;border-radius:8px;height:3rem;font-size:1.2rem;display:block;margin-top:1rem;margin-bottom:0;border:1px solid white;",
 			},
 		});
 		container.createEl("button", {
 			text: "Ask local LLM",
 			attr: {
 				id: "submit_button",
-				style: "width:95%;padding:2.5px;border-radius:8px;display:block;font-size:1.2rem;margin-top:1rem;margin-bottom:0;border:1px solid white;",
+				style: "width:95%;padding:2.5px;border-radius:8px;display:block;font-size:1.2rem;margin-top:0.5rem;margin-bottom:0;border:1px solid white;",
 			},
 		});
 		container.createEl("button", {
 			text: "Clean chat",
 			attr: {
 				id: "clean_button",
-				style: "width:95%;padding:2.5px;border-radius:8px;display:block;font-size:1.2rem;margin-top:1rem;margin-bottom:0;border:1px solid white;",
+				style: "margin-top:1rem;width:95%;padding:2.5px;border-radius:8px;display:block;font-size:1.2rem;margin-top:1rem;margin-bottom:0;border:1px solid white;",
 			},
 		});
+
 		const inputSelector = container.querySelector("#input_field");
 		const buttonSelector = container.querySelector("#submit_button");
 		const chatboxSelector = container.querySelector("#chat_box");
 		const cleanSelector = container.querySelector("#clean_button");
-		let inputvalue: any;
+		const templateSelector = container.querySelector("#template_box");
+		let inputvalue: string;
+		let templateValue: string;
 		const paragraph = document.createElement("p");
 		paragraph.textContent = "Local LLM chat";
 		inputSelector?.addEventListener("keyup", (event) => {
@@ -97,9 +109,18 @@ export class ExampleView extends ItemView {
 			}
 		});
 
+		templateSelector?.addEventListener("keyup", (event) => {
+			const target = event.target as HTMLButtonElement;
+			if (target) {
+				templateValue = target.value;
+			}
+		});
+
 		buttonSelector?.addEventListener("click", async () => {
 			// eslint-disable-next-line prefer-const
 			let passingValue = inputvalue;
+			// eslint-disable-next-line prefer-const
+			let tempValue = templateValue;
 			const waitingForAnswer = `\n\nWaiting for answer to prompt: ${passingValue}\n\n`;
 
 			if (chatboxSelector) {
@@ -109,7 +130,9 @@ export class ExampleView extends ItemView {
 
 			const llmSettings = set;
 			const llmModel = llmSettings.model;
+			const temp = tempValue;
 			await ollama.setModel(llmModel);
+			await ollama.setTemplate(temp);
 			if (chatboxSelector) {
 				chatboxSelector.textContent += `\n\n`;
 			}
