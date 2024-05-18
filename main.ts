@@ -15,11 +15,13 @@ const ollama = new Ollama();
 interface llmSettings {
 	ollama_endpoint: string;
 	model: string;
+	botRole: string;
 }
 
 const DEFAULT_SETTINGS: llmSettings = {
 	ollama_endpoint: "http://localhost:11434/api/generate",
 	model: "tinyllama",
+	botRole: "You are a helpful assistant providing only short answers",
 };
 
 async function streamingResponse(editor: any, set: any, userRequest: any) {
@@ -53,7 +55,8 @@ export class ExampleView extends ItemView {
 	}
 
 	async onOpen() {
-		const set = this.settings;
+		// eslint-disable-next-line prefer-const
+		let set = this.settings;
 		const container = this.containerEl.children[1];
 		container.empty();
 		container.createEl("div", {
@@ -63,9 +66,8 @@ export class ExampleView extends ItemView {
 			},
 		});
 		container.createEl("input", {
-			placeholder:
-				"You are a helpful AI assistant providing only short answers",
-			value: "You are a helpful AI assistant providing only short answers",
+			placeholder: this.settings.botRole,
+			value: set.botRole,
 			attr: {
 				id: "stop_stream_button",
 				style: "width:95%;padding:2px;border-radius:8px;height:2rem;font-size:1.2rem;display:block;margin-top:1rem;margin-bottom:0;border:1px solid white;",
@@ -313,6 +315,21 @@ class llmSettingsTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+
+			new Setting(containerEl)
+				.setName("Default bot role")
+				.setDesc("Define a bot role")
+				.addTextArea((text) =>
+					text
+						.setPlaceholder(
+							"Bot role: for example, you are a helpful assistant providing only short answers"
+						)
+						.setValue(this.plugin.settings.botRole)
+						.onChange(async (value) => {
+							this.plugin.settings.botRole = value;
+							await this.plugin.saveSettings();
+						})
+				);
 		} else {
 			new Setting(containerEl)
 				.setName("LLM model")
@@ -335,6 +352,23 @@ class llmSettingsTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+
+			new Setting(containerEl)
+				.setName("Default bot role")
+				.setDesc("Define a bot role")
+				.addTextArea((text) =>
+					text
+						.setPlaceholder(
+							"Bot role: for example, you are a helpful assistant providing only short answers"
+						)
+						.setValue(
+							"You are a helpful assistant providing only short answers"
+						)
+						.onChange(async (value) => {
+							this.plugin.settings.botRole = value;
+							await this.plugin.saveSettings();
+						})
+				);
 		}
 	}
 }
