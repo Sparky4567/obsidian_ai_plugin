@@ -24,12 +24,19 @@ const DEFAULT_SETTINGS: llmSettings = {
 	botRole: "You are a helpful assistant providing only short answers",
 };
 
-async function streamingResponse(editor: any, set: any, userRequest: any) {
+async function streamingResponse(
+	editor: any,
+	set: any,
+	userRequest: any,
+	selection: any
+) {
 	const llmSettings = set;
 	const llmModel = llmSettings.model;
-	await ollama.setModel(llmModel);
+	const selectedArea = selection;
 
+	await ollama.setModel(llmModel);
 	// callback to print each word
+	editor.replaceSelection(`${selectedArea}\n\n`);
 	const print = (word: string) => {
 		editor.replaceSelection(word);
 	};
@@ -188,7 +195,7 @@ export default class llmPlugin extends Plugin {
 				const selection = editor.getSelection();
 				const userRequest = selection;
 				new Notice("Trying to send a request to LLM !\n\nPatience !");
-				streamingResponse(editor, settings, userRequest);
+				streamingResponse(editor, settings, userRequest, userRequest);
 			},
 		});
 
@@ -198,7 +205,12 @@ export default class llmPlugin extends Plugin {
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				const continueRequest = `Continue my story and make it better: ${userRequest}`;
-				streamingResponse(editor, settings, continueRequest);
+				streamingResponse(
+					editor,
+					settings,
+					continueRequest,
+					userRequest
+				);
 			},
 		});
 
@@ -209,7 +221,7 @@ export default class llmPlugin extends Plugin {
 				const userRequest = editor.getSelection();
 				// eslint-disable-next-line prefer-const
 				const storyRequest = `Make a story from my text: ${userRequest}`;
-				streamingResponse(editor, settings, storyRequest);
+				streamingResponse(editor, settings, storyRequest, userRequest);
 			},
 		});
 
@@ -219,7 +231,12 @@ export default class llmPlugin extends Plugin {
 			editorCallback: (editor: Editor) => {
 				const userRequest = editor.getSelection();
 				const summaryRequest = `Make a summary from provided text: ${userRequest}`;
-				streamingResponse(editor, settings, summaryRequest);
+				streamingResponse(
+					editor,
+					settings,
+					summaryRequest,
+					userRequest
+				);
 			},
 		});
 		this.addSettingTab(new llmSettingsTab(this.app, this, settings));
