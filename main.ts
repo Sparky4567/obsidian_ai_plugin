@@ -294,7 +294,17 @@ class llmSettingsTab extends PluginSettingTab {
 
 	display(): void {
 		const { containerEl } = this;
-
+		const modelOptions = [
+			"tinyllama",
+			"phi",
+			"phi3",
+			"orca-mini",
+			"tinydolphin",
+			"samantha-mistral",
+			"llama2",
+			"llama3",
+			"medllama2",
+		];
 		containerEl.empty();
 
 		new Setting(containerEl)
@@ -317,16 +327,11 @@ class llmSettingsTab extends PluginSettingTab {
 					"Choose a model, remember that you should download ollama and needed models first !"
 				)
 				.addDropdown((dropdown) => {
+					dropdown;
+					modelOptions.forEach((model) => {
+						dropdown.addOption(model, model);
+					});
 					dropdown
-						.addOption("tinyllama", "tinyllama")
-						.addOption("phi", "phi")
-						.addOption("phi3", "phi3")
-						.addOption("orca-mini", "orca-mini")
-						.addOption("tinydolphin", "tinydolphin")
-						.addOption("samantha-mistral", "samantha-mistral")
-						.addOption("llama2", "llama2")
-						.addOption("llama3", "llama3")
-						.addOption("medllama2", "medllama2")
 						.setValue(this.settings.model)
 						.onChange(async (value) => {
 							this.plugin.settings.model = value;
@@ -355,21 +360,14 @@ class llmSettingsTab extends PluginSettingTab {
 					"Choose a model, remember that you should download ollama and needed models first !"
 				)
 				.addDropdown((dropdown) => {
-					dropdown
-						.addOption("tinyllama", "tinyllama")
-						.addOption("phi", "phi")
-						.addOption("phi3", "phi3")
-						.addOption("orca-mini", "orca-mini")
-						.addOption("tinydolphin", "tinydolphin")
-						.addOption("samantha-mistral", "samantha-mistral")
-						.addOption("llama2", "llama2")
-						.addOption("llama3", "llama3")
-						.addOption("medllama2", "medllama2")
-						.setValue("tinyllama")
-						.onChange(async (value) => {
-							this.plugin.settings.model = value;
-							await this.plugin.saveSettings();
-						});
+					modelOptions.forEach((model) => {
+						dropdown.addOption(model, model);
+					});
+
+					dropdown.setValue("tinyllama").onChange(async (value) => {
+						this.plugin.settings.model = value;
+						await this.plugin.saveSettings();
+					});
 				});
 
 			new Setting(containerEl)
