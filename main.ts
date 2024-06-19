@@ -320,6 +320,7 @@ class llmSettingsTab extends PluginSettingTab {
 					dropdown
 						.addOption("tinyllama", "tinyllama")
 						.addOption("phi", "phi")
+						.addOption("phi3", "phi3")
 						.addOption("orca-mini", "orca-mini")
 						.addOption("tinydolphin", "tinydolphin")
 						.addOption("samantha-mistral", "samantha-mistral")
@@ -357,6 +358,7 @@ class llmSettingsTab extends PluginSettingTab {
 					dropdown
 						.addOption("tinyllama", "tinyllama")
 						.addOption("phi", "phi")
+						.addOption("phi3", "phi3")
 						.addOption("orca-mini", "orca-mini")
 						.addOption("tinydolphin", "tinydolphin")
 						.addOption("samantha-mistral", "samantha-mistral")
