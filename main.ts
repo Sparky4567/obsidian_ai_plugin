@@ -298,11 +298,14 @@ class llmSettingsTab extends PluginSettingTab {
 			"tinyllama",
 			"phi",
 			"phi3",
+			"gemma:2b",
+			"gemma2",
 			"orca-mini",
 			"tinydolphin",
 			"samantha-mistral",
 			"llama2",
 			"llama3",
+			"llama3:70b",
 			"medllama2",
 		];
 		containerEl.empty();
