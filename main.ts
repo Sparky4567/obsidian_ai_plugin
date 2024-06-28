@@ -40,7 +40,9 @@ async function streamingResponse(
 	const print = (word: string) => {
 		editor.replaceSelection(word);
 	};
-	await ollama.streamingGenerate(userRequest, print);
+	await ollama.streamingGenerate(userRequest, print).catch((e) => {
+		new Notice(`Error ${e}`);
+	});
 }
 
 export const VIEW_TYPE_EXAMPLE = "example-view";
@@ -292,22 +294,32 @@ class llmSettingsTab extends PluginSettingTab {
 		this.settings = settings;
 	}
 
-	display(): void {
+	async getModels() {
+		// eslint-disable-next-line prefer-const
+		let modelList = await ollama.listModels().then((data) => {
+			return data.models;
+		});
+		return modelList;
+	}
+
+	async display(): Promise<void> {
 		const { containerEl } = this;
-		const modelOptions = [
-			"tinyllama",
-			"phi",
-			"phi3",
-			"gemma:2b",
-			"gemma2",
-			"orca-mini",
-			"tinydolphin",
-			"samantha-mistral",
-			"llama2",
-			"llama3",
-			"llama3:70b",
-			"medllama2",
-		];
+		// eslint-disable-next-line prefer-const
+		let modelOptions = await this.getModels();
+		// const modelOptions = [
+		// 	"tinyllama",
+		// 	"phi",
+		// 	"phi3",
+		// 	"gemma:2b",
+		// 	"gemma2",
+		// 	"orca-mini",
+		// 	"tinydolphin",
+		// 	"samantha-mistral",
+		// 	"llama2",
+		// 	"llama3",
+		// 	"llama3:70b",
+		// 	"medllama2",
+		// ];
 		containerEl.empty();
 
 		new Setting(containerEl)
