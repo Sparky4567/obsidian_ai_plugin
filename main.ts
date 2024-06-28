@@ -306,20 +306,6 @@ class llmSettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 		// eslint-disable-next-line prefer-const
 		let modelOptions = await this.getModels();
-		// const modelOptions = [
-		// 	"tinyllama",
-		// 	"phi",
-		// 	"phi3",
-		// 	"gemma:2b",
-		// 	"gemma2",
-		// 	"orca-mini",
-		// 	"tinydolphin",
-		// 	"samantha-mistral",
-		// 	"llama2",
-		// 	"llama3",
-		// 	"llama3:70b",
-		// 	"medllama2",
-		// ];
 		containerEl.empty();
 
 		new Setting(containerEl)
@@ -379,10 +365,12 @@ class llmSettingsTab extends PluginSettingTab {
 						dropdown.addOption(model, model);
 					});
 
-					dropdown.setValue("tinyllama").onChange(async (value) => {
-						this.plugin.settings.model = value;
-						await this.plugin.saveSettings();
-					});
+					dropdown
+						.setValue(modelOptions[0])
+						.onChange(async (value) => {
+							this.plugin.settings.model = value;
+							await this.plugin.saveSettings();
+						});
 				});
 
 			new Setting(containerEl)
