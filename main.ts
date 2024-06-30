@@ -33,12 +33,17 @@ function readSettings(pluginId: String) {
 		// You can further process or use `dataObject` as needed in your plugin
 	} catch (error) {
 		console.log(error);
-		new Notice("Can not read data.json settings file");
+		new Notice("Could not read data.json settings file");
+		new Notice(
+			"Select a model within the settings tab and it will be created automatically"
+		);
 		return false;
 	}
 }
-
-const llm_endpoint = readSettings("ai_llm");
+let llm_endpoint = readSettings("ai_llm");
+if (llm_endpoint === false) {
+	llm_endpoint = "127.0.0.1";
+}
 
 async function checkConnection(passedEndpoint: String) {
 	const checkUrl = `http://${passedEndpoint}:11434/api/ps`;
@@ -447,7 +452,7 @@ class llmSettingsTab extends PluginSettingTab {
 						dropdown.addOption(model, model);
 					});
 					dropdown
-						.setValue(this.settings.model)
+						.setValue(modelOptions[0])
 						.onChange(async (value) => {
 							this.plugin.settings.model = value;
 							await this.plugin.saveSettings();
