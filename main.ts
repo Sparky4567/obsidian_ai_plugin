@@ -32,7 +32,6 @@ function readSettings(pluginId: String) {
 		return endpoint;
 		// You can further process or use `dataObject` as needed in your plugin
 	} catch (error) {
-		console.log(error);
 		new Notice("Could not read data.json settings file");
 		new Notice(
 			"Select a model within the settings tab and it will be created automatically"
@@ -47,7 +46,6 @@ if (llm_endpoint === false) {
 
 async function checkConnection(passedEndpoint: String) {
 	const checkUrl = `http://${passedEndpoint}:11434/api/ps`;
-	console.log(checkUrl);
 	let res: any;
 	try {
 		const req = await requestUrl(checkUrl)
