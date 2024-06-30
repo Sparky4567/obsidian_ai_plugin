@@ -40,7 +40,7 @@ function readSettings(pluginId: String) {
 		return false;
 	}
 }
-let llm_endpoint = readSettings("ai_llm");
+let llm_endpoint = readSettings("obsidian_ai_plugin");
 if (llm_endpoint === false) {
 	llm_endpoint = "127.0.0.1";
 }
@@ -301,7 +301,7 @@ export default class llmPlugin extends Plugin {
 			id: "reload-llm",
 			name: "Reload llm plugin",
 			callback: () => {
-				reloadPlugin("ai_llm");
+				reloadPlugin("obsidian_ai_plugin");
 			},
 			hotkeys: [],
 		});
