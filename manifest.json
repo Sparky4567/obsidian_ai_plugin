@@ -1,7 +1,7 @@
 {
 	"id": "ai_llm",
 	"name": "AI LLM",
-	"version": "1.1.2",
+	"version": "1.1.3",
 	"minAppVersion": "1.5.11",
 	"description": "Integrate local machine learning (OLLAMA) functionality into your notes, enhancing their capabilities",
 	"author": "Sparky4567",

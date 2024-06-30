@@ -1,3 +1,5 @@
+import * as fs from "fs";
+
 import {
 	App,
 	Editor,
@@ -8,21 +10,121 @@ import {
 	WorkspaceLeaf,
 	Setting,
 	ItemView,
+	requestUrl,
 } from "obsidian";
 import { Ollama } from "ollama-node";
-const ollama = new Ollama();
 
 interface llmSettings {
 	ollama_endpoint: string;
 	model: string;
 	botRole: string;
 }
+//@ts-ignore
+const absPath = app.vault.adapter.basePath;
+
+function readSettings(pluginId: String) {
+	const dataFilePath = `${absPath}/.obsidian/plugins/${pluginId}/data.json`; // Adjust path as per your file location
+
+	try {
+		const fileContent = fs.readFileSync(dataFilePath, "utf-8");
+		const dataObject = JSON.parse(fileContent);
+		const endpoint = dataObject["ollama_endpoint"];
+		return endpoint;
+		// You can further process or use `dataObject` as needed in your plugin
+	} catch (error) {
+		console.log(error);
+		new Notice("Can not read data.json settings file");
+		return false;
+	}
+}
+
+const llm_endpoint = readSettings("ai_llm");
+
+async function checkConnection(passedEndpoint: String) {
+	const checkUrl = `http://${passedEndpoint}:11434/api/ps`;
+	console.log(checkUrl);
+	let res: any;
+	try {
+		const req = await requestUrl(checkUrl)
+			.then((dat) => {
+				return dat.status;
+			})
+			.catch((e) => {
+				return false;
+			});
+		return req;
+	} catch (error) {
+		return false;
+	}
+}
+
+let ollama: any;
+try {
+	if (llm_endpoint !== false && llm_endpoint !== "127.0.0.1") {
+		try {
+			new Notice(
+				`Ollama endpoint: ${llm_endpoint}, trying to initiate !`
+			);
+			checkConnection(llm_endpoint).then((data) => {
+				if (String(data) === "200" && String(data) !== "false") {
+					new Notice(`Passed custom endpoint check: Success ! 🥳`);
+					ollama = new Ollama(llm_endpoint);
+				} else {
+					if (String(data) === "false") {
+						new Notice(
+							`Passed custom endpoint ${llm_endpoint} check: No, status ${data} 🥹`
+						);
+						new Notice(
+							`Initiating default endpoint instead, double check your custom endpoint 🔎`
+						);
+						ollama = new Ollama();
+					}
+				}
+			});
+		} catch (error) {
+			new Notice(`Error: ${error} !`);
+		}
+	} else {
+		try {
+			checkConnection(llm_endpoint)
+				.then((data) => {
+					if (String(data) === "200" && String(data) !== "false") {
+						new Notice(
+							`Passed ${llm_endpoint} endpoint check: Success ! 🥳`
+						);
+						ollama = new Ollama(llm_endpoint);
+					}
+				})
+				.catch((e) => {
+					new Notice(`Error: ${e} !`);
+				});
+		} catch (error) {
+			new Notice(`Error encountered: ${error} !`);
+		}
+	}
+} catch (e) {
+	new Notice(`Error encountered: ${e} !`);
+}
 
 const DEFAULT_SETTINGS: llmSettings = {
-	ollama_endpoint: "http://localhost:11434/api/generate",
+	ollama_endpoint: "127.0.0.1",
 	model: "tinyllama",
 	botRole: "You are a helpful assistant providing only short answers",
 };
+
+async function reloadPlugin(plugin: String) {
+	//@ts-ignore
+	const plugins = app.plugins;
+	const enabled = plugins.enabledPlugins;
+	enabled.forEach(async (element: { value: String }) => {
+		if (String(plugin) === String(element)) {
+			await plugins.disablePlugin(plugin);
+			new Notice(`Llm plugin was disabled 🙂👍️!`);
+			await plugins.enablePlugin(plugin);
+			new Notice(`Plugin was re-enabled. 💻️!`);
+		}
+	});
+}
 
 async function streamingResponse(
 	editor: any,
@@ -40,7 +142,7 @@ async function streamingResponse(
 	const print = (word: string) => {
 		editor.replaceSelection(word);
 	};
-	await ollama.streamingGenerate(userRequest, print).catch((e) => {
+	await ollama.streamingGenerate(userRequest, print).catch((e: any) => {
 		new Notice(`Error ${e}`);
 	});
 }
@@ -173,6 +275,7 @@ export class ExampleView extends ItemView {
 
 export default class llmPlugin extends Plugin {
 	settings: llmSettings;
+
 	async onload() {
 		const settings = await this.loadSettings();
 		this.registerView(
@@ -190,8 +293,17 @@ export default class llmPlugin extends Plugin {
 		);
 
 		this.addCommand({
+			id: "reload-llm",
+			name: "Reload llm plugin",
+			callback: () => {
+				reloadPlugin("ai_llm");
+			},
+			hotkeys: [],
+		});
+
+		this.addCommand({
 			id: "send-request-to-llm",
-			name: "Ask Llm",
+			name: "Ask llm",
 			editorCallback: (editor: Editor) => {
 				// eslint-disable-next-line prefer-const
 				const selection = editor.getSelection();
@@ -296,9 +408,11 @@ class llmSettingsTab extends PluginSettingTab {
 
 	async getModels() {
 		// eslint-disable-next-line prefer-const
-		let modelList = await ollama.listModels().then((data) => {
-			return data.models;
-		});
+		let modelList = await ollama
+			.listModels()
+			.then((data: { models: any }) => {
+				return data.models;
+			});
 		return modelList;
 	}
 
@@ -329,7 +443,7 @@ class llmSettingsTab extends PluginSettingTab {
 				)
 				.addDropdown((dropdown) => {
 					dropdown;
-					modelOptions.forEach((model) => {
+					modelOptions.forEach((model: string) => {
 						dropdown.addOption(model, model);
 					});
 					dropdown
@@ -361,7 +475,7 @@ class llmSettingsTab extends PluginSettingTab {
 					"Choose a model, remember that you should download ollama and needed models first !"
 				)
 				.addDropdown((dropdown) => {
-					modelOptions.forEach((model) => {
+					modelOptions.forEach((model: string) => {
 						dropdown.addOption(model, model);
 					});
 
