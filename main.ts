@@ -450,7 +450,7 @@ class llmSettingsTab extends PluginSettingTab {
 						dropdown.addOption(model, model);
 					});
 					dropdown
-						.setValue(modelOptions[0])
+						.setValue(this.settings.model)
 						.onChange(async (value) => {
 							this.plugin.settings.model = value;
 							await this.plugin.saveSettings();
